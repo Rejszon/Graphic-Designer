@@ -1,0 +1,100 @@
+package rules;
+
+declare Question
+    content: QuestionContent
+end
+
+declare UserResponse
+    questionIdentifier : QuestionContent
+    usersAnswer : Answer
+end
+
+declare Reaction
+	content: ReactionContent
+end
+
+declare Recommendation
+    content: Result
+end
+
+declare ReactionHistory
+    qId : QuestionContent
+end
+
+declare enum QuestionContent
+	DO_YOU_LOVE_ART("Do you love art?"),
+	CAN_YOU_DRAW("Can you draw?"),
+	ARE_YOU_GOOD_AT_SIZE_AND_SPATIAL("Are you good at size and spatial balance between objects on a page?"),
+	ARE_YOU_PASSIONATE_ABOUT_ART("Are you passionate about art and graphic design?"),
+	ARE_YOU_CREATIVE("Are you creative?"),
+	ARE_YOU_GOOD_WITH_PEOPLE("Are you good with people?"),
+	ARE_YOU_GOOD_WITH_PEOPLE_2("Are you good with people?"),
+	DO_YOU_MANAGE_YOUR_TIME("Do you manage your time well?"),
+	CAN_YOU_TAKE_CRITICISM("Can you take criticism?"),
+	CAN_YOU_VISUALLY("Can you visually translate a concept or idea?"),
+	DO_YOU_HAVE_A_SOLID("Do you have a solid understanding of color theory?"),
+	DO_YOU_HAVE_A_DESIRE("Do you have a desire to continue to grow and learn?"),
+	ARE_YOU_GOOD_AT_TAKING("Are you good at taking direction form others?"),
+	ARE_YOU_ABLE_TO_BE_HONEST("Are you able to be honest with yourself?"),
+	CAN_YOU_FOCUS("Can you focus on a task with an eye towards completion?"),
+	DO_YOU_LOVE_A_CHALLENGE("Do you love a challenge?"),
+	ARE_YOU_PERSISTENT("Are you persistent?"),
+	DO_YOU_EVEN_LIKE_PEOPLE("Do you even like people?"),
+	DO_YOU_NOTICE("Do you notice graphic design in every day life?");
+
+	content: String
+end
+
+declare enum ReactionContent
+	GREAT_YOU_PASSED("Great.You passed the first test. You are obviously smart and don't want to be like all those other losers that we told to take a hike"),
+	WELL_OKAY("Well okay. You don't need to know how to draw if you have mad design skills"),
+	PERFECT_DRAWING_SKILLS("Perfect. Drawing skills are mucho importanto to being a successful graphic designer"),
+	NICE_A_SENSE("Nice. A sense of balance between objects is a great skill to have."),
+	DID_I_MENTION("Did i mention it would be nice if you could draw but passion for design is good"),
+	OKAY_THIS_IS("Okay, this is starting to feel like it is not a great career path for you"),
+	NOW_WERE_TALKING("Now we're talking"),
+	ROCK_STAR("Rock star so far"),
+	NICE_SAVE("Nice save"),
+	SOMETIMES_JUST_HAVING("Sometimes just having great ideas can get you places"),
+	GOOD_NOT_EVERYONE("Good. Not everyone is going to love your every idea"),
+	YOURE_EITHER_COLORBLIND("You're either colorblind or weren't paying attention in grade school art. Either way, you should understand it to be in this field"),
+	UGH("Ugh... You really need to be able to translate infromation into visual form"),
+	THIS_COULD_BE_TROUBLE("This could be trouble"),
+	THEN_SUCK_IT_UP("Then suck it up, get over your bad self, and move on"),
+	SWEET("Sweet. You might have 5 to 10 things going on all at the same time"),
+	UH_OH("Uh oh... Not good"),
+	YOU_MIGHT("You might want to figure how to get out of your shell"),
+	WELL_THEN("Well then maybe you can just suck it up and muscle through it"),
+	INTERPERSONAL("Interpersonal skills are so important in a communications field like this"),
+	AT_LEAST("At least you can get something done even if it is one thing at a time"),
+	WELL_YOU_CAN("Well you can get by by taking the easy route, but you might be frustrated"),
+	PERFECT("Perfect. Sometimes the simplest looking projects can be the most difficult"),
+	OKAY_YOU_ARE("Okay. You are just a freak of nature"),
+	THIS_IS("This is not the carrer for you. But I know some hip cats in the fine arts growing dreads"),
+	DONT_WORRY("Don't worry... You will once you get going in this carrer!");
+
+	content: String
+end
+
+declare enum Answer
+	YES("Yes"),
+	NO("No");
+	
+	content: String
+end
+
+declare enum Result
+	SERIOUSLY("Seriously? Then why did you stop at this table then? I think there is shiny object floating up in the sky outside. Go stare at it and let me know if it moves"),
+	I_HEAR("I hear there is a sale on Hostess products in the cafeteria"),
+	YOU_MIGHT_BE_CUT("You might be cut out to be a creative manager in a studio or agency, but sorry, graphic desgin is not your thing"),
+	YOU_SHOULD("You should just go to the cafeteria and grab a twinkie with that bozo who has no desire to learn anything new"),
+	MAYBE("Maybe a carrer in fine arts is more suited for you. Move to Austin and learn how to grow some sweet dreadlocks"),
+	I_MIGHT("I might say go to the cafeteria to grab delicious treat but you wouldn't listen anyway"),
+	YOU_NEED("You need to see a shrink"),
+	WOW("Wow. You lost it there at the end. And the finish line was so close"),
+	THIS_MIGHT("This might be a good point to head to the cafeteria and get yourself a ho ho"),
+	YOU_MIGHT_HAVE_ISSUES("You might have issues. Are you hungry for a cakey treat?"),
+	CAN_BE("Then you too can be a graphic designer");
+	
+	content: String
+end

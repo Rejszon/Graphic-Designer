@@ -1,0 +1,630 @@
+package rules;
+rule "init"
+    when
+        not Question()
+        not UserResponse()
+        not Recommendation()
+    then
+        insert(new Question(QuestionContent.DO_YOU_LOVE_ART));
+end
+
+rule "DO YOU LOVE ART : NO"
+    when
+        UserResponse(questionIdentifier == QuestionContent.DO_YOU_LOVE_ART, usersAnswer == Answer.NO)
+    then
+        insert(new Recommendation(Result.SERIOUSLY));
+end
+
+rule "DO YOU LOVE ART : YES"
+    when
+        UserResponse(questionIdentifier == QuestionContent.DO_YOU_LOVE_ART, usersAnswer == Answer.YES)
+        not ReactionHistory(qId == QuestionContent.DO_YOU_LOVE_ART)
+    then
+        insert(new Reaction(ReactionContent.GREAT_YOU_PASSED));
+        insert(new ReactionHistory(QuestionContent.DO_YOU_LOVE_ART));
+end
+
+rule "DO YOU LOVE ART -> CAN YOU DRAW"
+    when
+        UserResponse(questionIdentifier == QuestionContent.DO_YOU_LOVE_ART, usersAnswer == Answer.YES)
+        ReactionHistory(qId == QuestionContent.DO_YOU_LOVE_ART)
+        not Reaction()
+        not Question(content == QuestionContent.CAN_YOU_DRAW)
+        not UserResponse(questionIdentifier == QuestionContent.CAN_YOU_DRAW)
+    then
+        insert(new Question(QuestionContent.CAN_YOU_DRAW));
+end
+
+rule "CAN YOU DRAW : NO"
+    when
+        UserResponse(questionIdentifier == QuestionContent.CAN_YOU_DRAW, usersAnswer == Answer.NO)
+        not ReactionHistory(qId == QuestionContent.CAN_YOU_DRAW)
+    then
+        insert(new Reaction(ReactionContent.WELL_OKAY));
+        insert(new ReactionHistory(QuestionContent.CAN_YOU_DRAW));
+end
+
+rule "CAN YOU DRAW : YES"
+    when
+        UserResponse(questionIdentifier == QuestionContent.CAN_YOU_DRAW, usersAnswer == Answer.YES)
+        not ReactionHistory(qId == QuestionContent.CAN_YOU_DRAW)
+    then
+        insert(new Reaction(ReactionContent.PERFECT_DRAWING_SKILLS));
+        insert(new ReactionHistory(QuestionContent.CAN_YOU_DRAW));
+end
+
+rule "CAN YOU DRAW -> ARE U PASSIONATE"
+    when
+        UserResponse(questionIdentifier == QuestionContent.CAN_YOU_DRAW, usersAnswer == Answer.NO)
+        ReactionHistory(qId == QuestionContent.CAN_YOU_DRAW)
+        not Reaction()
+        not Question(content == QuestionContent.ARE_YOU_PASSIONATE_ABOUT_ART)
+        not UserResponse(questionIdentifier == QuestionContent.ARE_YOU_PASSIONATE_ABOUT_ART)
+    then
+        insert(new Question(QuestionContent.ARE_YOU_PASSIONATE_ABOUT_ART));
+end
+
+rule "CAN YOU DRAW -> ARE YOU GOOD AT SIZE AND SPATIAL"
+    when
+        UserResponse(questionIdentifier == QuestionContent.CAN_YOU_DRAW, usersAnswer == Answer.YES)
+        ReactionHistory(qId == QuestionContent.CAN_YOU_DRAW)
+        not Reaction()
+        not Question(content == QuestionContent.ARE_YOU_GOOD_AT_SIZE_AND_SPATIAL)
+        not UserResponse(questionIdentifier == QuestionContent.ARE_YOU_GOOD_AT_SIZE_AND_SPATIAL)
+    then
+        insert(new Question(QuestionContent.ARE_YOU_GOOD_AT_SIZE_AND_SPATIAL));
+end
+
+rule "ARE YOU PASSIONATE : YES"
+    when
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_PASSIONATE_ABOUT_ART, usersAnswer == Answer.YES)
+        not ReactionHistory(qId == QuestionContent.ARE_YOU_PASSIONATE_ABOUT_ART)
+    then
+        insert(new Reaction(ReactionContent.DID_I_MENTION));
+        insert(new ReactionHistory(QuestionContent.ARE_YOU_PASSIONATE_ABOUT_ART));
+end
+
+rule "ARE YOU PASSIONATE : NO"
+    when
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_PASSIONATE_ABOUT_ART, usersAnswer == Answer.NO)
+        not ReactionHistory(qId == QuestionContent.ARE_YOU_PASSIONATE_ABOUT_ART)
+    then
+        insert(new Reaction(ReactionContent.OKAY_THIS_IS));
+        insert(new ReactionHistory(QuestionContent.ARE_YOU_PASSIONATE_ABOUT_ART));
+end
+
+rule "ARE YOU GOOD AT SIZE AND SPATIAL : YES"
+    when
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_GOOD_AT_SIZE_AND_SPATIAL, usersAnswer == Answer.YES)
+        not ReactionHistory(qId == QuestionContent.ARE_YOU_GOOD_AT_SIZE_AND_SPATIAL)
+    then
+        insert(new Reaction(ReactionContent.NICE_A_SENSE));
+        insert(new ReactionHistory(QuestionContent.ARE_YOU_GOOD_AT_SIZE_AND_SPATIAL));
+end
+
+rule "ARE YOU GOOD AT SIZE AND SPATIAL : NO"
+    when
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_GOOD_AT_SIZE_AND_SPATIAL, usersAnswer == Answer.NO)
+        not ReactionHistory(qId == QuestionContent.ARE_YOU_GOOD_AT_SIZE_AND_SPATIAL)
+    then
+        insert(new ReactionHistory(QuestionContent.ARE_YOU_GOOD_AT_SIZE_AND_SPATIAL));
+        insert(new Recommendation(Result.MAYBE));
+end
+
+rule "ARE U PASSIONATE -> ARE YOU GOOD AT SIZE AND SPATIAL"
+    when
+        UserResponse(questionIdentifier == QuestionContent.CAN_YOU_DRAW, usersAnswer == Answer.NO)
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_PASSIONATE_ABOUT_ART, usersAnswer == Answer.YES)
+        ReactionHistory(qId == QuestionContent.ARE_YOU_PASSIONATE_ABOUT_ART)
+        not Reaction()
+        not Question(content == QuestionContent.ARE_YOU_GOOD_AT_SIZE_AND_SPATIAL)
+        not UserResponse(questionIdentifier == QuestionContent.ARE_YOU_GOOD_AT_SIZE_AND_SPATIAL)
+    then
+        insert(new Question(QuestionContent.ARE_YOU_GOOD_AT_SIZE_AND_SPATIAL));
+end
+
+rule "ARE U PASSIONATE -> ARE YOU CREATIVE"
+    when
+        UserResponse(questionIdentifier == QuestionContent.CAN_YOU_DRAW, usersAnswer == Answer.NO)
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_PASSIONATE_ABOUT_ART, usersAnswer == Answer.NO)
+        ReactionHistory(qId == QuestionContent.ARE_YOU_PASSIONATE_ABOUT_ART)
+        not Reaction()
+        not Question(content == QuestionContent.ARE_YOU_CREATIVE)
+        not UserResponse(questionIdentifier == QuestionContent.ARE_YOU_CREATIVE)
+    then
+        insert(new Question(QuestionContent.ARE_YOU_CREATIVE));
+end
+
+rule "ARE YOU CREATIVE : NO"
+    when
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_CREATIVE, usersAnswer == Answer.NO)
+        not ReactionHistory(qId == QuestionContent.ARE_YOU_GOOD_AT_SIZE_AND_SPATIAL)
+    then
+        insert(new ReactionHistory(QuestionContent.ARE_YOU_GOOD_AT_SIZE_AND_SPATIAL));
+        insert(new Recommendation(Result.YOU_SHOULD));
+end
+
+rule "ARE YOU CREATIVE : YES"
+    when
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_CREATIVE, usersAnswer == Answer.YES)
+        not ReactionHistory(qId == QuestionContent.ARE_YOU_CREATIVE)
+    then
+    	insert(new Reaction(ReactionContent.SOMETIMES_JUST_HAVING));
+        insert(new ReactionHistory(QuestionContent.ARE_YOU_CREATIVE));
+end
+
+rule "ARE U GOOD AT SIZE AND SPATIAL -> DO YOU HAVE A SOLID"
+    when
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_GOOD_AT_SIZE_AND_SPATIAL, usersAnswer == Answer.YES)
+        ReactionHistory(qId == QuestionContent.ARE_YOU_GOOD_AT_SIZE_AND_SPATIAL)
+        not Reaction()
+        not Question(content == QuestionContent.DO_YOU_HAVE_A_SOLID)
+        not UserResponse(questionIdentifier == QuestionContent.DO_YOU_HAVE_A_SOLID)
+    then
+        insert(new Question(QuestionContent.DO_YOU_HAVE_A_SOLID));
+end
+
+rule "DO YOU HAVE A SOLID : NO"
+    when
+        UserResponse(questionIdentifier == QuestionContent.DO_YOU_HAVE_A_SOLID, usersAnswer == Answer.NO)
+        not ReactionHistory(qId == QuestionContent.DO_YOU_HAVE_A_SOLID)
+    then
+    	insert(new Reaction(ReactionContent.YOURE_EITHER_COLORBLIND));
+        insert(new ReactionHistory(QuestionContent.DO_YOU_HAVE_A_SOLID));
+end
+
+rule "DO YOU HAVE A SOLID : YES"
+    when
+        UserResponse(questionIdentifier == QuestionContent.DO_YOU_HAVE_A_SOLID, usersAnswer == Answer.YES)
+        not ReactionHistory(qId == QuestionContent.DO_YOU_HAVE_A_SOLID)
+    then
+    	insert(new Reaction(ReactionContent.NOW_WERE_TALKING));
+        insert(new ReactionHistory(QuestionContent.DO_YOU_HAVE_A_SOLID));
+end
+
+rule "DO YOU HAVE A SOLID -> DO YOU HAVE A DESIRE"
+    when
+        UserResponse(questionIdentifier == QuestionContent.DO_YOU_HAVE_A_SOLID, usersAnswer == Answer.NO)
+        ReactionHistory(qId == QuestionContent.DO_YOU_HAVE_A_SOLID)
+        not Reaction()
+        not Question(content == QuestionContent.DO_YOU_HAVE_A_DESIRE)
+        not UserResponse(questionIdentifier == QuestionContent.DO_YOU_HAVE_A_DESIRE)
+    then
+        insert(new Question(QuestionContent.DO_YOU_HAVE_A_DESIRE));
+end
+
+rule "DO YOU HAVE A SOLID -> CAN YOU VISUALLY"
+    when
+        UserResponse(questionIdentifier == QuestionContent.DO_YOU_HAVE_A_SOLID, usersAnswer == Answer.YES)
+        ReactionHistory(qId == QuestionContent.DO_YOU_HAVE_A_SOLID)
+        not Reaction()
+        not Question(content == QuestionContent.CAN_YOU_VISUALLY)
+        not UserResponse(questionIdentifier == QuestionContent.CAN_YOU_VISUALLY)
+    then
+        insert(new Question(QuestionContent.CAN_YOU_VISUALLY));
+end
+
+rule "DO YOU HAVE A DESIRE : NO"
+    when
+        UserResponse(questionIdentifier == QuestionContent.DO_YOU_HAVE_A_DESIRE, usersAnswer == Answer.NO)
+        not ReactionHistory(qId == QuestionContent.DO_YOU_HAVE_A_DESIRE)
+    then
+    	insert(new Recommendation(Result.THIS_MIGHT));
+        insert(new ReactionHistory(QuestionContent.DO_YOU_HAVE_A_DESIRE));
+end
+
+rule "DO YOU HAVE A DESIRE : YES"
+    when
+        UserResponse(questionIdentifier == QuestionContent.DO_YOU_HAVE_A_DESIRE, usersAnswer == Answer.YES)
+        not ReactionHistory(qId == QuestionContent.DO_YOU_HAVE_A_DESIRE)
+    then
+    	insert(new Reaction(ReactionContent.NOW_WERE_TALKING));
+        insert(new ReactionHistory(QuestionContent.DO_YOU_HAVE_A_DESIRE));
+end
+
+rule "DO YOU HAVE A DESIRE -> CAN YOU VISUALLY"
+    when
+        UserResponse(questionIdentifier == QuestionContent.DO_YOU_HAVE_A_DESIRE, usersAnswer == Answer.YES)
+        ReactionHistory(qId == QuestionContent.DO_YOU_HAVE_A_DESIRE)
+        not Reaction()
+        not Question(content == QuestionContent.CAN_YOU_VISUALLY)
+        not UserResponse(questionIdentifier == QuestionContent.CAN_YOU_VISUALLY)
+    then
+        insert(new Question(QuestionContent.CAN_YOU_VISUALLY));
+end
+
+rule "ARE YOU CREATIVE -> ARE YOU GOOD WITH PEOPLE"
+    when
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_CREATIVE, usersAnswer == Answer.YES)
+        ReactionHistory(qId == QuestionContent.ARE_YOU_CREATIVE)
+        not Reaction()
+        not Question(content == QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE)
+        not UserResponse(questionIdentifier == QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE)
+    then
+        insert(new Question(QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE));
+end
+
+rule "ARE YOU GOOD WITH PEOPLE : NO"
+    when
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE, usersAnswer == Answer.NO)
+        not ReactionHistory(qId == QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE)
+    then
+    	insert(new Recommendation(Result.I_HEAR));
+        insert(new ReactionHistory(QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE));
+end
+
+rule "ARE YOU GOOD WITH PEOPLE : YES"
+    when
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE, usersAnswer == Answer.YES)
+        not ReactionHistory(qId == QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE)
+    then
+    	insert(new Recommendation(Result.YOU_MIGHT_BE_CUT));
+        insert(new ReactionHistory(QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE));
+end
+
+rule "CAN YOU VISUALLY : NO"
+    when
+        UserResponse(questionIdentifier == QuestionContent.CAN_YOU_VISUALLY, usersAnswer == Answer.NO)
+        not ReactionHistory(qId == QuestionContent.CAN_YOU_VISUALLY)
+    then
+    	insert(new Reaction(ReactionContent.UGH));
+        insert(new ReactionHistory(QuestionContent.CAN_YOU_VISUALLY));
+end
+
+rule "CAN YOU VISUALLY : YES"
+    when
+        UserResponse(questionIdentifier == QuestionContent.CAN_YOU_VISUALLY, usersAnswer == Answer.YES)
+        not ReactionHistory(qId == QuestionContent.CAN_YOU_VISUALLY)
+    then
+    	insert(new Reaction(ReactionContent.ROCK_STAR));
+        insert(new ReactionHistory(QuestionContent.CAN_YOU_VISUALLY));
+end
+
+rule "CAN YOU VISUALLY -> ARE YOU GOOD AT TAKING"
+    when
+        UserResponse(questionIdentifier == QuestionContent.CAN_YOU_VISUALLY, usersAnswer == Answer.NO)
+        ReactionHistory(qId == QuestionContent.CAN_YOU_VISUALLY)
+        not Reaction()
+        not Question(content == QuestionContent.ARE_YOU_GOOD_AT_TAKING)
+        not UserResponse(questionIdentifier == QuestionContent.ARE_YOU_GOOD_AT_TAKING)
+    then
+        insert(new Question(QuestionContent.ARE_YOU_GOOD_AT_TAKING));
+end
+
+rule "ARE YOU GOOD AT TAKING : NO"
+    when
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_GOOD_AT_TAKING, usersAnswer == Answer.NO)
+        not ReactionHistory(qId == QuestionContent.ARE_YOU_GOOD_AT_TAKING)
+    then
+    	insert(new Recommendation(Result.I_MIGHT));
+        insert(new ReactionHistory(QuestionContent.ARE_YOU_GOOD_AT_TAKING));
+end
+
+rule "ARE YOU GOOD AT TAKING : YES"
+    when
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_GOOD_AT_TAKING, usersAnswer == Answer.YES)
+        not ReactionHistory(qId == QuestionContent.ARE_YOU_GOOD_AT_TAKING)
+    then
+    	insert(new Reaction(ReactionContent.NICE_SAVE));
+    	insert(new Reaction(ReactionContent.ROCK_STAR));
+        insert(new ReactionHistory(QuestionContent.ARE_YOU_GOOD_AT_TAKING));
+end
+
+rule "CAN YOU VISUALLY -> CAN YOU TAKE CRISTICISM"
+    when
+        UserResponse(questionIdentifier == QuestionContent.CAN_YOU_VISUALLY, usersAnswer == Answer.YES)
+        ReactionHistory(qId == QuestionContent.CAN_YOU_VISUALLY)
+        not Reaction()
+        not Question(content == QuestionContent.CAN_YOU_TAKE_CRITICISM)
+        not UserResponse(questionIdentifier == QuestionContent.CAN_YOU_TAKE_CRITICISM)
+    then
+        insert(new Question(QuestionContent.CAN_YOU_TAKE_CRITICISM));
+end
+
+rule "ARE YOU GOOD AT TAKING -> CAN YOU TAKE CRITICISM"
+    when
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_GOOD_AT_TAKING, usersAnswer == Answer.YES)
+        ReactionHistory(qId == QuestionContent.ARE_YOU_GOOD_AT_TAKING)
+        not Reaction()
+        not Question(content == QuestionContent.CAN_YOU_TAKE_CRITICISM)
+        not UserResponse(questionIdentifier == QuestionContent.CAN_YOU_TAKE_CRITICISM)
+    then
+        insert(new Question(QuestionContent.CAN_YOU_TAKE_CRITICISM));
+end
+
+rule "CAN YOU TAKE CRITICISM : NO"
+    when
+        UserResponse(questionIdentifier == QuestionContent.CAN_YOU_TAKE_CRITICISM, usersAnswer == Answer.NO)
+        not ReactionHistory(qId == QuestionContent.CAN_YOU_TAKE_CRITICISM)
+    then
+    	insert(new Reaction(ReactionContent.THIS_COULD_BE_TROUBLE));
+        insert(new ReactionHistory(QuestionContent.CAN_YOU_TAKE_CRITICISM));
+end
+
+rule "CAN YOU TAKE CRITICISM : YES"
+    when
+        UserResponse(questionIdentifier == QuestionContent.CAN_YOU_TAKE_CRITICISM, usersAnswer == Answer.YES)
+        not ReactionHistory(qId == QuestionContent.CAN_YOU_TAKE_CRITICISM)
+    then
+    	insert(new Reaction(ReactionContent.GOOD_NOT_EVERYONE));
+        insert(new ReactionHistory(QuestionContent.CAN_YOU_TAKE_CRITICISM));
+end
+
+rule "CAN YOU TAKE CRITICISM -> ARE YOU ABLE TO BE HONEST"
+    when
+        UserResponse(questionIdentifier == QuestionContent.CAN_YOU_TAKE_CRITICISM, usersAnswer == Answer.NO)
+        ReactionHistory(qId == QuestionContent.CAN_YOU_TAKE_CRITICISM)
+        not Reaction()
+        not Question(content == QuestionContent.ARE_YOU_ABLE_TO_BE_HONEST)
+        not UserResponse(questionIdentifier == QuestionContent.ARE_YOU_ABLE_TO_BE_HONEST)
+    then
+        insert(new Question(QuestionContent.ARE_YOU_ABLE_TO_BE_HONEST));
+end
+
+rule "CAN YOU TAKE CRITICISM -> DO YOU MANAGE YOUR TIME"
+    when
+        UserResponse(questionIdentifier == QuestionContent.CAN_YOU_TAKE_CRITICISM, usersAnswer == Answer.YES)
+        ReactionHistory(qId == QuestionContent.CAN_YOU_TAKE_CRITICISM)
+        not Reaction()
+        not Question(content == QuestionContent.DO_YOU_MANAGE_YOUR_TIME)
+        not UserResponse(questionIdentifier == QuestionContent.DO_YOU_MANAGE_YOUR_TIME)
+    then
+        insert(new Question(QuestionContent.DO_YOU_MANAGE_YOUR_TIME));
+end
+
+rule "ARE YOU ABLE TO BE HONEST : NO"
+    when
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_ABLE_TO_BE_HONEST, usersAnswer == Answer.NO)
+        not ReactionHistory(qId == QuestionContent.ARE_YOU_ABLE_TO_BE_HONEST)
+    then
+    	insert(new Recommendation(Result.YOU_NEED));
+        insert(new ReactionHistory(QuestionContent.ARE_YOU_ABLE_TO_BE_HONEST));
+end
+
+rule "ARE YOU ABLE TO BE HONEST : YES"
+    when
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_ABLE_TO_BE_HONEST, usersAnswer == Answer.YES)
+        not ReactionHistory(qId == QuestionContent.ARE_YOU_ABLE_TO_BE_HONEST)
+    then
+    	insert(new Reaction(ReactionContent.THEN_SUCK_IT_UP));
+        insert(new ReactionHistory(QuestionContent.ARE_YOU_ABLE_TO_BE_HONEST));
+end
+
+rule "ARE YOU ABLE TO BE HONEST -> DO YOU MANAGE YOUR TIME"
+    when
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_ABLE_TO_BE_HONEST, usersAnswer == Answer.YES)
+        ReactionHistory(qId == QuestionContent.ARE_YOU_ABLE_TO_BE_HONEST)
+        not Reaction()
+        not Question(content == QuestionContent.DO_YOU_MANAGE_YOUR_TIME)
+        not UserResponse(questionIdentifier == QuestionContent.DO_YOU_MANAGE_YOUR_TIME)
+    then
+        insert(new Question(QuestionContent.DO_YOU_MANAGE_YOUR_TIME));
+end
+
+rule "DO YOU MANAGE YOUR TIME : NO"
+    when
+        UserResponse(questionIdentifier == QuestionContent.DO_YOU_MANAGE_YOUR_TIME, usersAnswer == Answer.NO)
+        not ReactionHistory(qId == QuestionContent.DO_YOU_MANAGE_YOUR_TIME)
+    then
+    	insert(new Reaction(ReactionContent.UH_OH));
+        insert(new ReactionHistory(QuestionContent.DO_YOU_MANAGE_YOUR_TIME));
+end
+
+rule "DO YOU MANAGE YOUR TIME : YES"
+    when
+        UserResponse(questionIdentifier == QuestionContent.DO_YOU_MANAGE_YOUR_TIME, usersAnswer == Answer.YES)
+        not ReactionHistory(qId == QuestionContent.DO_YOU_MANAGE_YOUR_TIME)
+    then
+    	insert(new Reaction(ReactionContent.SWEET));
+        insert(new ReactionHistory(QuestionContent.DO_YOU_MANAGE_YOUR_TIME));
+end
+
+rule "DO YOU MANAGE YOUR TIME -> CAN YOU FOCUS"
+    when
+        UserResponse(questionIdentifier == QuestionContent.DO_YOU_MANAGE_YOUR_TIME, usersAnswer == Answer.NO)
+        ReactionHistory(qId == QuestionContent.DO_YOU_MANAGE_YOUR_TIME)
+        not Reaction()
+        not Question(content == QuestionContent.CAN_YOU_FOCUS)
+        not UserResponse(questionIdentifier == QuestionContent.CAN_YOU_FOCUS)
+    then
+        insert(new Question(QuestionContent.CAN_YOU_FOCUS));
+end
+
+rule "DO YOU MANAGE YOUR TIME -> DO YOU LOVE A CHALLENGE"
+    when
+        UserResponse(questionIdentifier == QuestionContent.DO_YOU_MANAGE_YOUR_TIME, usersAnswer == Answer.YES)
+        ReactionHistory(qId == QuestionContent.DO_YOU_MANAGE_YOUR_TIME)
+        not Reaction()
+        not Question(content == QuestionContent.DO_YOU_LOVE_A_CHALLENGE)
+        not UserResponse(questionIdentifier == QuestionContent.DO_YOU_LOVE_A_CHALLENGE)
+    then
+        insert(new Question(QuestionContent.DO_YOU_LOVE_A_CHALLENGE));
+end
+
+rule "CAN YOU FOCUS : NO"
+    when
+        UserResponse(questionIdentifier == QuestionContent.CAN_YOU_FOCUS, usersAnswer == Answer.NO)
+        not ReactionHistory(qId == QuestionContent.CAN_YOU_FOCUS)
+    then
+    	insert(new Recommendation(Result.WOW));
+        insert(new ReactionHistory(QuestionContent.CAN_YOU_FOCUS));
+end
+
+rule "CAN YOU FOCUS : YES"
+    when
+        UserResponse(questionIdentifier == QuestionContent.CAN_YOU_FOCUS, usersAnswer == Answer.YES)
+        not ReactionHistory(qId == QuestionContent.CAN_YOU_FOCUS)
+    then
+    	insert(new Reaction(ReactionContent.AT_LEAST));
+        insert(new ReactionHistory(QuestionContent.CAN_YOU_FOCUS));
+end
+
+rule "CAN YOU FOCUS -> DO YOU LOVE A CHALLENGE"
+    when
+        UserResponse(questionIdentifier == QuestionContent.CAN_YOU_FOCUS, usersAnswer == Answer.YES)
+        ReactionHistory(qId == QuestionContent.CAN_YOU_FOCUS)
+        not Reaction()
+        not Question(content == QuestionContent.DO_YOU_LOVE_A_CHALLENGE)
+        not UserResponse(questionIdentifier == QuestionContent.DO_YOU_LOVE_A_CHALLENGE)
+    then
+        insert(new Question(QuestionContent.DO_YOU_LOVE_A_CHALLENGE));
+end
+
+rule "DO YOU LOVE A CHALLENGE : NO"
+    when
+        UserResponse(questionIdentifier == QuestionContent.DO_YOU_LOVE_A_CHALLENGE, usersAnswer == Answer.NO)
+        not ReactionHistory(qId == QuestionContent.DO_YOU_LOVE_A_CHALLENGE)
+    then
+    	insert(new Reaction(ReactionContent.WELL_YOU_CAN));
+        insert(new ReactionHistory(QuestionContent.DO_YOU_LOVE_A_CHALLENGE));
+end
+
+rule "DO YOU LOVE A CHALLENGE : YES"
+    when
+        UserResponse(questionIdentifier == QuestionContent.DO_YOU_LOVE_A_CHALLENGE, usersAnswer == Answer.YES)
+        not ReactionHistory(qId == QuestionContent.DO_YOU_LOVE_A_CHALLENGE)
+    then
+    	insert(new Reaction(ReactionContent.PERFECT));
+        insert(new ReactionHistory(QuestionContent.DO_YOU_LOVE_A_CHALLENGE));
+end
+
+rule "DO YOU LOVE A CHALLENGE -> ARE YOU PERSISTENT"
+    when
+        UserResponse(questionIdentifier == QuestionContent.DO_YOU_LOVE_A_CHALLENGE, usersAnswer == Answer.NO)
+        ReactionHistory(qId == QuestionContent.DO_YOU_LOVE_A_CHALLENGE)
+        not Reaction()
+        not Question(content == QuestionContent.ARE_YOU_PERSISTENT)
+        not UserResponse(questionIdentifier == QuestionContent.ARE_YOU_PERSISTENT)
+    then
+        insert(new Question(QuestionContent.ARE_YOU_PERSISTENT));
+end
+
+rule "DO YOU LOVE A CHALLENGE -> ARE YOU GOOD WITH PEOPLE 2"
+    when
+        UserResponse(questionIdentifier == QuestionContent.DO_YOU_LOVE_A_CHALLENGE, usersAnswer == Answer.YES)
+        ReactionHistory(qId == QuestionContent.DO_YOU_LOVE_A_CHALLENGE)
+        not Reaction()
+        not Question(content == QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE_2)
+        not UserResponse(questionIdentifier == QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE_2)
+    then
+        insert(new Question(QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE_2));
+end
+
+rule "ARE YOU PERSISTENT : NO"
+    when
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_PERSISTENT, usersAnswer == Answer.NO)
+        not ReactionHistory(qId == QuestionContent.ARE_YOU_PERSISTENT)
+    then
+    	insert(new Reaction(ReactionContent.THIS_IS));
+    	insert(new Recommendation(Result.MAYBE));
+        insert(new ReactionHistory(QuestionContent.ARE_YOU_PERSISTENT));
+end
+
+rule "ARE YOU PERSISTENT : YES"
+    when
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_PERSISTENT, usersAnswer == Answer.YES)
+        not ReactionHistory(qId == QuestionContent.ARE_YOU_PERSISTENT)
+    then
+    	insert(new Reaction(ReactionContent.WELL_THEN));
+        insert(new ReactionHistory(QuestionContent.ARE_YOU_PERSISTENT));
+end
+
+rule "ARE YOU PERSISTENT -> ARE YOU GOOD WITH PEOPLE 2"
+    when
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_PERSISTENT, usersAnswer == Answer.YES)
+        ReactionHistory(qId == QuestionContent.ARE_YOU_PERSISTENT)
+        not Reaction()
+        not Question(content == QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE_2)
+        not UserResponse(questionIdentifier == QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE_2)
+    then
+        insert(new Question(QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE_2));
+end
+
+rule "ARE_YOU_GOOD_WITH_PEOPLE_2 : NO"
+    when
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE_2, usersAnswer == Answer.NO)
+        not ReactionHistory(qId == QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE_2)
+    then
+    	insert(new Reaction(ReactionContent.YOU_MIGHT));
+        insert(new ReactionHistory(QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE_2));
+end
+
+rule "ARE_YOU_GOOD_WITH_PEOPLE_2 : YES"
+    when
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE_2, usersAnswer == Answer.YES)
+        not ReactionHistory(qId == QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE_2)
+    then
+    	insert(new Reaction(ReactionContent.INTERPERSONAL));
+        insert(new ReactionHistory(QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE_2));
+end
+
+rule "ARE YOU GOOD WITH PEOPLE 2 -> DO YOU EVEN LIKE PEOPLE"
+    when
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE_2, usersAnswer == Answer.NO)
+        ReactionHistory(qId == QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE_2)
+        not Reaction()
+        not Question(content == QuestionContent.DO_YOU_EVEN_LIKE_PEOPLE)
+        not UserResponse(questionIdentifier == QuestionContent.DO_YOU_EVEN_LIKE_PEOPLE)
+    then
+        insert(new Question(QuestionContent.DO_YOU_EVEN_LIKE_PEOPLE));
+end
+
+rule "ARE YOU GOOD WITH PEOPLE 2 -> DO YOU NOTICE"
+    when
+        UserResponse(questionIdentifier == QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE_2, usersAnswer == Answer.YES)
+        ReactionHistory(qId == QuestionContent.ARE_YOU_GOOD_WITH_PEOPLE_2)
+        not Reaction()
+        not Question(content == QuestionContent.DO_YOU_NOTICE)
+        not UserResponse(questionIdentifier == QuestionContent.DO_YOU_NOTICE)
+    then
+        insert(new Question(QuestionContent.DO_YOU_NOTICE));
+end
+
+rule "DO YOU EVEN LIKE PEOPLE : NO"
+    when
+        UserResponse(questionIdentifier == QuestionContent.DO_YOU_EVEN_LIKE_PEOPLE, usersAnswer == Answer.NO)
+        not ReactionHistory(qId == QuestionContent.DO_YOU_EVEN_LIKE_PEOPLE)
+    then
+    	insert(new Recommendation(Result.YOU_MIGHT_HAVE_ISSUES));
+        insert(new ReactionHistory(QuestionContent.DO_YOU_EVEN_LIKE_PEOPLE));
+end
+
+rule "DO YOU EVEN LIKE PEOPLE : YES"
+    when
+        UserResponse(questionIdentifier == QuestionContent.DO_YOU_EVEN_LIKE_PEOPLE, usersAnswer == Answer.YES)
+        not ReactionHistory(qId == QuestionContent.DO_YOU_EVEN_LIKE_PEOPLE)
+    then
+    	insert(new Reaction(ReactionContent.INTERPERSONAL));
+        insert(new ReactionHistory(QuestionContent.DO_YOU_EVEN_LIKE_PEOPLE));
+end
+
+rule "DO YOU EVEN LIKE PEOPLE -> DO YOU NOTICE"
+    when
+        UserResponse(questionIdentifier == QuestionContent.DO_YOU_EVEN_LIKE_PEOPLE, usersAnswer == Answer.YES)
+        ReactionHistory(qId == QuestionContent.DO_YOU_EVEN_LIKE_PEOPLE)
+        not Reaction()
+        not Question(content == QuestionContent.DO_YOU_NOTICE)
+        not UserResponse(questionIdentifier == QuestionContent.DO_YOU_NOTICE)
+    then
+        insert(new Question(QuestionContent.DO_YOU_NOTICE));
+end
+
+rule "DO YOU NOTICE : NO"
+    when
+        UserResponse(questionIdentifier == QuestionContent.DO_YOU_NOTICE, usersAnswer == Answer.NO)
+        not ReactionHistory(qId == QuestionContent.DO_YOU_NOTICE)
+    then
+    	insert(new Reaction(ReactionContent.DONT_WORRY));
+    	insert(new Recommendation(Result.CAN_BE));
+        insert(new ReactionHistory(QuestionContent.DO_YOU_NOTICE));
+end
+
+rule "DO YOU NOTICE : YES"
+    when
+        UserResponse(questionIdentifier == QuestionContent.DO_YOU_NOTICE, usersAnswer == Answer.YES)
+        not ReactionHistory(qId == QuestionContent.DO_YOU_NOTICE)
+    then
+    	insert(new Reaction(ReactionContent.OKAY_YOU_ARE));
+    	insert(new Recommendation(Result.CAN_BE));
+        insert(new ReactionHistory(QuestionContent.DO_YOU_NOTICE));
+end
